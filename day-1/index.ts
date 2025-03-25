@@ -6,8 +6,8 @@ type Input = {
 export function parseInput(input: string): Input {
   const listOne: number[] = [];
   const listTwo: number[] = [];
-  input.split("\n").forEach((line) => {
-    const numbers = line.split(" ");
+  input.split('\n').forEach((line) => {
+    const numbers = line.split(' ');
     const numOne = parseInt(numbers[0]);
     const numTwo = parseInt(numbers[numbers.length - 1]);
     listOne.push(!isNaN(numOne) ? numOne : 0);
@@ -51,13 +51,13 @@ export function totalByCount(listOne: number[], listTwo: number[]): number {
 }
 
 export async function main(filePath: string) {
-  console.log("##### Part One #####");
+  console.log('##### Part One #####');
   const text = await Deno.readTextFile(filePath);
   const { listOne, listTwo } = parseInput(text);
   const distance = calculateDistance(listOne, listTwo);
   console.log({ distance });
 
-  console.log("##### Part Two #####");
+  console.log('##### Part Two #####');
   const secondDistance = totalByCount(listOne, listTwo);
 
   console.log({ secondDistance });
