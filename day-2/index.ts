@@ -1,8 +1,3 @@
-export enum Safety {
-  SAFE = "safe",
-  UNSAFE = "unsafe",
-}
-
 export function parseReports(input: string): number[][] {
   return input
     .trim()
@@ -18,20 +13,20 @@ function getDifferences(report: number[]): number[] {
   });
 }
 
-export function isSafe(report: number[]): Safety {
+export function isSafe(report: number[]): boolean {
   const differences = getDifferences(report);
   const inSafeBounds = differences.every((n) => {
     const absDiff = Math.abs(n);
     return absDiff < 4 && absDiff > 0;
   });
 
-  const isOscillating = !differences
+  const isMonotonic = differences
     .map((d) => Math.sign(d))
     .every((n, _idx, array) => {
       return n === array[0];
     });
 
-  return inSafeBounds && !isOscillating ? Safety.SAFE : Safety.UNSAFE;
+  return inSafeBounds && isMonotonic;
 }
 
 export function countSafe(input: string, verbose?: boolean) {
@@ -44,14 +39,49 @@ export function countSafe(input: string, verbose?: boolean) {
     return isReportSafe;
   });
 
-  return safetyReports.filter((report) => report === Safety.SAFE).length;
+  return safetyReports.filter((report) => report).length;
+}
+
+export function dampenReport(report: number[]): number[][] {
+  return report.map((_n, idx) => {
+    const copiedReport = [...report];
+    copiedReport.splice(idx, 1);
+    return copiedReport;
+  });
+}
+
+export function countSafeWithDampener(input: string, verbose?: boolean) {
+  const reports = parseReports(input);
+  const safetyReports = reports.map((report) => {
+    const isReportSafe = isSafe(report);
+    if (verbose) {
+      console.log({ report, isReportSafe });
+    }
+
+    if (isReportSafe) {
+      return isReportSafe;
+    }
+
+    const dampenedReports = dampenReport(report);
+    for (const dampenedReport of dampenedReports) {
+      const isSafeWhenDampened = isSafe(dampenedReport);
+      if (isSafeWhenDampened) return isSafeWhenDampened;
+    }
+
+    return false;
+  });
+
+  return safetyReports.filter((report) => report).length;
 }
 
 export async function main(filePath: string) {
   console.log("##### Part One #####");
   const input = await Deno.readTextFile(filePath);
-  const safetyCount = countSafe(input, true);
+  const safetyCount = countSafe(input, false);
   console.log({ safetyCount });
 
   console.log("##### Part Two #####");
+
+  const safetyCountWithDampener = countSafeWithDampener(input, false);
+  console.log({ safetyCountWithDampener });
 }

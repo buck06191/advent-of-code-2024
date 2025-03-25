@@ -1,5 +1,11 @@
 import { beforeEach, describe, it } from "jsr:@std/testing/bdd";
-import { countSafe, isSafe, parseReports, Safety } from "./index.ts";
+import {
+  countSafe,
+  countSafeWithDampener,
+  dampenReport,
+  isSafe,
+  parseReports,
+} from "./index.ts";
 import { assertEquals } from "@std/assert/equals";
 
 const input = `7 6 4 2 1
@@ -37,27 +43,27 @@ describe("isSafe", () => {
   const inputs = [
     {
       input: [7, 6, 4, 2, 1],
-      expected: Safety.SAFE,
+      expected: true,
     },
     {
       input: [1, 2, 7, 8, 9],
-      expected: Safety.UNSAFE,
+      expected: false,
     },
     {
       input: [9, 7, 6, 2, 1],
-      expected: Safety.UNSAFE,
+      expected: false,
     },
     {
       input: [1, 3, 2, 4, 5],
-      expected: Safety.UNSAFE,
+      expected: false,
     },
     {
       input: [8, 6, 4, 4, 1],
-      expected: Safety.UNSAFE,
+      expected: false,
     },
     {
       input: [1, 3, 6, 7, 9],
-      expected: Safety.SAFE,
+      expected: true,
     },
   ];
 
@@ -74,5 +80,25 @@ describe("countSafe", () => {
   it("should parse input correctly", () => {
     const actual = countSafe(input);
     assertEquals(actual, 2);
+  });
+});
+
+describe("dampenReport", () => {
+  it("should get all dampened combinations", () => {
+    const actual = dampenReport([1, 2, 3, 4]);
+    const expected = [
+      [2, 3, 4],
+      [1, 3, 4],
+      [1, 2, 4],
+      [1, 2, 3],
+    ];
+    assertEquals(actual, expected);
+  });
+});
+
+describe("countSafeWithDampener", () => {
+  it("should parse input correctly", () => {
+    const actual = countSafeWithDampener(input);
+    assertEquals(actual, 4);
   });
 });
